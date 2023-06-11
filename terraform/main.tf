@@ -3,13 +3,13 @@ provider "aws" {
 }
 
 module "vpc" {
-  source     = "modules/vpc/main.tf"
+  source     = "modules/vpc/vpc.tf"
   vpc_cidr   = "10.1.0.0/16"
   subnet_cidrs = ["10.1.0.0/24", "10.1.1.0/24", "10.1.2.0/24", "10.1.3.0/24", "10.1.4.0/24", "10.1.5.0/24"]
 }
 
 module "ec2_instance" {
-  source        = "modules/ec2/main.tf"
+  source        = "modules/ec2/ec2.tf"
   subnet_id     = module.vpc.public_subnet_ids[0]
   instance_type = "t3a.medium"
   instance_ami  = "ami-07e3dc2213dc535c6" # WS 2019 Base AMI
@@ -18,7 +18,7 @@ module "ec2_instance" {
 }
 
 module "web_server_1" {
-  source        = "modules/ec2/main.tf"
+  source        = "modules/ec2/ec2.tf"
   subnet_id     = module.vpc.wp_subnet_ids[0]
   instance_ami  = "ami-00aa0673b34e3c150" # RHEL 9 AMI
   instance_type = "t3a.micro"
@@ -27,7 +27,7 @@ module "web_server_1" {
 }
 
 module "web_server_2" {
-  source        = "modules/ec2/main.tf"
+  source        = "modules/ec2/ec2.tf"
   subnet_id     = module.vpc.wp_subnet_ids[1]
   instance_ami  = "ami-00aa0673b34e3c150" # RHEL 9 AMI
   instance_type = "t3a.micro"
@@ -36,7 +36,7 @@ module "web_server_2" {
 }
 
 module "rds" {
-  source        = "modules/rds/main.tf"
+  source        = "modules/rds/rds.tf"
   subnet_id     = module.vpc.db_subnet_ids[1]
   db_name       = "RDS1"
   db_instance_type = "db.t3.micro"
@@ -45,7 +45,7 @@ module "rds" {
 }
 
 module "alb" {
-  source          = "modules/alb/main.tf"
+  source          = "modules/alb/alb.tf"
   vpc_id          = module.vpc.vpc_id
   public_subnets  = module.vpc.public_subnet_ids
   wp_subnet_id    = module.vpc.wp_subnet_ids[0]
