@@ -17,7 +17,7 @@ module "ec2_instance" {
   storage_size  = 50
 }
 
-module "web_server_1" {
+module "web_server1" {
   source        = "modules/ec2/ec2.tf"
   subnet_id     = module.vpc.private_subnets[0]
   instance_ami  = "ami-00aa0673b34e3c150" # RHEL 9 AMI
@@ -26,7 +26,7 @@ module "web_server_1" {
   storage_size  = 20
 }
 
-module "web_server_2" {
+module "web_server2" {
   source        = "modules/ec2/ec2.tf"
   subnet_id     = module.vpc.private_subnets[1]
   instance_ami  = "ami-00aa0673b34e3c150" # RHEL 9 AMI
