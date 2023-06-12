@@ -1,0 +1,43 @@
+---
+- name: Patch and configure bastion1
+  hosts: bastion1
+  tasks:
+    - name: Install security updates
+      win_updates:
+        category_names: SecurityUpdates
+        state: installed
+      register: update_result
+      until: update_result.changed | default(false) | bool
+      retries: 3
+      delay: 300
+
+    - name: Configure 'Restrict access to this computer from the network'
+      win_security_policy:
+        policy_db: machine
+        policy_template: secure
+        name: "Network access: Restrict anonymous access to Named Pipes and Shares"
+        state: "configure"
+        value: "Guests, Local account and member of Administrators group"
+      register: network_policy_result
+
+    - name: Configure 'Configure Attack Surface Reduction rules'
+      win_security_policy:
+        policy_db: machine
+        policy_template: secure
+        name: "Configure Attack Surface Reduction rules: Set the state for each ASR rule"
+        state: "configure"
+        value: "26190899-1602-49e8-8b27-eb1d0a1ce869"
+      register: asr_policy_result
+
+    - name: Reboot the server if required by updates
+      win_reboot:
+      when: update_result.reboot_required | default(false) | bool
+
+    - name: Display update and policy configuration results
+      debug:
+        msg: "{{ item.changed }} - {{ item.name }}"
+      loop:
+        - { changed: "{{ update_result.changed }}", name: "Security updates" }
+        - { changed: "{{ network_policy_result.changed }}", name: "Network access policy" }
+        - { changed: "{{ asr_policy_result.changed }}", name: "ASR rules policy" }
+
