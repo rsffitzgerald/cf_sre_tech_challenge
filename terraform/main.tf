@@ -10,7 +10,7 @@ module "vpc" {
 
 module "ec2_instance" {
   source        = "modules/ec2/ec2.tf"
-  subnet_id     = module.vpc.public_subnet_ids[0]
+  subnet_id     = module.vpc.public_subnets[0]
   instance_type = "t3a.medium"
   instance_ami  = "ami-07e3dc2213dc535c6" # WS 2019 Base AMI
   hostname      = "bastion1"
@@ -19,7 +19,7 @@ module "ec2_instance" {
 
 module "web_server_1" {
   source        = "modules/ec2/ec2.tf"
-  subnet_id     = module.vpc.wp_subnet_ids[0]
+  subnet_id     = module.vpc.private_subnets[0]
   instance_ami  = "ami-00aa0673b34e3c150" # RHEL 9 AMI
   instance_type = "t3a.micro"
   hostname      = "wpserver1"
@@ -28,7 +28,7 @@ module "web_server_1" {
 
 module "web_server_2" {
   source        = "modules/ec2/ec2.tf"
-  subnet_id     = module.vpc.wp_subnet_ids[1]
+  subnet_id     = module.vpc.private_subnets[1]
   instance_ami  = "ami-00aa0673b34e3c150" # RHEL 9 AMI
   instance_type = "t3a.micro"
   hostname      = "wpserver2"
@@ -37,7 +37,7 @@ module "web_server_2" {
 
 module "rds" {
   source        = "modules/rds/rds.tf"
-  subnet_id     = module.vpc.db_subnet_ids[1]
+  subnet_id     = module.vpc.private_subnets[3]
   db_name       = "RDS1"
   db_instance_type = "db.t3.micro"
   db_engine     = "postgres"
@@ -47,7 +47,7 @@ module "rds" {
 module "alb" {
   source          = "modules/alb/alb.tf"
   vpc_id          = module.vpc.vpc_id
-  public_subnets  = module.vpc.public_subnet_ids
-  wp_subnet_id    = module.vpc.wp_subnet_ids[0]
+  public_subnets  = module.vpc.public_subnets
+  wp_subnet_id    = module.vpc.private_subnets
 }
 

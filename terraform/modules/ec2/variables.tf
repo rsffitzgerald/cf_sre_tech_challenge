@@ -24,3 +24,8 @@ variable instance_root_device_size {
     description = "Root bock device size in GB"
     default = 20
 }
+
+variable subnet_id {
+    type = string
+    description = "The VPC Subnet ID to launch in"
+}
